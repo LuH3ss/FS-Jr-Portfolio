@@ -1,18 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-interface AuthRequest extends Request {
-  userId?: string;
-}
 
 export const authMiddleware = (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
+  if (!authHeader || Array.isArray(authHeader)) {
     return res.status(401).json({ error: "No token provided" });
   }
 
@@ -22,7 +19,7 @@ export const authMiddleware = (
   return res.status(401).json({ error: "Invalid token format" });
 }
 
-const token = authHeader.substring(7);
+const token = parts[1]
 
 if (!token) {
   return res.status(401).json({ error: "Token missing" });
