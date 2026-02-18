@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AppError } from "../utils/AppError.js";
 
 
 export const authMiddleware = (
@@ -28,12 +29,31 @@ if (!token) {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET!
-    ) as any;
+    ) as {
+    id: string;
+    role: "USER" | "ADMIN";
+  };
 
-    req.userId = decoded.userId;
+     req.userId = decoded.id;
+  req.userRole = decoded.role;
 
     next();
   } catch (error) {
     return res.status(401).json({ error: "Invalid token" });
   }
+};
+
+
+export const authorize = (...roles: ("USER" | "ADMIN")[]) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    if (!req.userRole) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    if (!roles.includes(req.userRole)) {
+      throw new AppError("Forbidden", 403);
+    }
+
+    next();
+  };
 };

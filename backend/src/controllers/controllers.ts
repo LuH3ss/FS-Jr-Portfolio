@@ -2,73 +2,53 @@ import prisma from "../lib/prisma.js";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { error } from "node:console";
+import { AppError } from "../utils/AppError.js";
 
 /* =========================
    POSTS
 ========================= */
 
-export const deletePost = async (req: Request<{ id: string }>, res: Response) => {
-  try {
+export const deletePost = async (req: Request, res: Response) => {
+   
+    const postId = req.params.id as string;
 
-    const postIdParam = req.params.id;
-
-if (!postIdParam || Array.isArray(postIdParam)) {
-  return res.status(400).json({ message: "Invalid Post ID" });
-}
-
-    const postId = req.params.id;
-    if (!postId) {
-      return res.status(400).json({ message: "Post ID is required" });
-    }
     if (!req.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      throw new AppError("Unauthorized", 401);
     }
-    
-    const userId = req.userId;
-    
 
     const post = await prisma.post.findUnique({
       where: { id: postId },
     });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+    throw new AppError("Post not found", 404);
     }
 
-    if (post.authorId !== userId) {
-      return res.status(403).json({ message: "Not authorized" });
+    if (post.authorId !== req.userId) {
+      throw new AppError("Not authorized", 403);
     }
 
     await prisma.post.delete({
       where: { id: postId },
     });
 
-    return res.json({ message: "Post deleted" });
+    return res.status(204).send();
 
-  } catch (error) {
-    return res.status(500).json({ message: "Server error" });
-  }
+ 
+     ;
+  
+
 };
 
-export const updatePost = async (req: Request<{ id: string }>, res: Response) => {
-  try {
-
-    const postIdParam = req.params.id;
-
-if (!postIdParam || Array.isArray(postIdParam)) {
-  return res.status(400).json({ message: "Invalid Post ID" });
-}
-
-    const postId = req.params.id;
-    if (!postId) {
-      return res.status(400).json({ message: "Post ID is required" });
-    }
+export const updatePost = async (req: Request, res: Response) => {
+ 
+    const postId = req.params.id as string;
 
     if (!req.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      throw new AppError("Unauthorized", 401);
     }
 
-    const userId = req.userId;
     const { title, content } = req.body;
 
     const post = await prisma.post.findUnique({
@@ -76,11 +56,11 @@ if (!postIdParam || Array.isArray(postIdParam)) {
     });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+        throw new AppError("Post not found", 404);
     }
 
-    if (post.authorId !== userId) {
-      return res.status(403).json({ message: "Not authorized" });
+    if (post.authorId !== req.userId) {
+      throw new AppError("Not authorized", 403);
     }
 
     const updatedPost = await prisma.post.update({
@@ -93,24 +73,21 @@ if (!postIdParam || Array.isArray(postIdParam)) {
 
     return res.json(updatedPost);
 
-  } catch (error) {
-    return res.status(500).json({ message: "Server error" });
-  }
+  
 };
 
 export const postPost = async (req: Request, res: Response) => {
-  try {
+  
+  
     if (!req.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+  throw new AppError("Unauthorized", 401);      
     }
 
     const userId = req.userId;
     const { title, content } = req.body;
 
     if (!title || !content) {
-      return res.status(400).json({
-        error: "Title and content are required",
-      });
+      throw new AppError("Title and content are required", 400)
     }
 
     const post = await prisma.post.create({
@@ -123,29 +100,70 @@ export const postPost = async (req: Request, res: Response) => {
 
     return res.status(201).json(post);
 
-  } catch (error) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
+  
+   
+  
 };
 
 export const getPosts = async (_req: Request, res: Response) => {
-  const posts = await prisma.post.findMany();
+ 
+   const posts = await prisma.post.findMany({
+       include: {
+        author: {
+          select: {
+            id: true,
+            email: true,
+          },
+        }}
+   });
+  
   return res.json(posts);
+ 
 };
+
+export const getPostById = async (req: Request, res: Response) => {
+
+    const  id  = req.params.id as string
+
+    
+  const post = await prisma.post.findUnique({
+  where: { id },
+  include: {
+    author: {
+      select: {
+        id: true,
+        email: true,
+      },
+    },
+  },
+})
+  if(!post) {
+    throw new AppError("Post not found", 404)
+  }
+  return res.json(post)
+ 
+}
 
 /* =========================
    USERS
 ========================= */
 
 export const getUsers = async (_req: Request, res: Response) => {
-  const users = await prisma.user.findMany();
+ 
+   const users = await prisma.user.findMany();
+
+  
+
   return res.json(users);
+
+  
+ 
 };
 
 export const getMe = async (req: Request, res: Response) => {
-  try {
+  
     if (!req.userId) {
-      return res.status(401).json({ error: "Unauthorized" });
+     throw new AppError("Anauthorized", 401)
     }
 
     const userId = req.userId;
@@ -160,14 +178,14 @@ export const getMe = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      throw new AppError("User not found", 404)
     }
 
     return res.json(user);
 
-  } catch (error) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
+
+    
+
 };
 
 /* =========================
@@ -175,7 +193,7 @@ export const getMe = async (req: Request, res: Response) => {
 ========================= */
 
 export const login = async (req: Request, res: Response) => {
-  try {
+  
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({
@@ -183,36 +201,34 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+     throw new AppError("Invalida credentials", 401)
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+       throw new AppError("Invalida credentials", 401)
     }
 
     const token = jwt.sign(
-      { userId: user.id },
+      { userId: user.id, role: user.role },
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
 
     return res.json({ token });
 
-  } catch (error) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
+  
+   
+  
 };
 
 export const createUsers = async (req: Request, res: Response) => {
-  try {
+  
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        error: "Email and password required",
-      });
+      throw new AppError("Email and password are required", 400)
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -224,17 +240,9 @@ export const createUsers = async (req: Request, res: Response) => {
       },
     });
 
+    
     return res.status(201).json(user);
-
-  } catch (error: any) {
-    if (error.code === "P2002") {
-      return res.status(409).json({
-        error: "Email already exists",
-      });
-    }
-
-    return res.status(500).json({
-      error: "Internal server error",
-    });
-  }
+    
+    
+  
 };
