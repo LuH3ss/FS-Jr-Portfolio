@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { postPost, updatePost, deletePost, getPosts, getPostById, getUsers } from "../controllers/controllers.js";
-import { authMiddleware, authorize } from "../middlewares/auth.middleware.js";
+import { authMiddleware} from "../middlewares/auth.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { authorize } from "../middlewares/authorize.js";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.get(
 );
 router.get("/", asyncHandler(getPosts));
 router.get("/:id", asyncHandler(getPostById));
+
 
 
 

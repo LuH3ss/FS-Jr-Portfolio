@@ -25,9 +25,12 @@ export const deletePost = async (req: Request, res: Response) => {
     throw new AppError("Post not found", 404);
     }
 
-    if (post.authorId !== req.userId) {
-      throw new AppError("Not authorized", 403);
-    }
+    if (
+  req.userRole !== "ADMIN" &&
+  post.authorId !== req.userId
+) {
+  throw new AppError("Not authorized", 403);
+}
 
     await prisma.post.delete({
       where: { id: postId },
@@ -169,23 +172,20 @@ export const getMe = async (req: Request, res: Response) => {
     const userId = req.userId;
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-      },
-    });
+    where: { id: userId! },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
+  });
 
     if (!user) {
       throw new AppError("User not found", 404)
     }
 
     return res.json(user);
-
-
-    
-
 };
 
 /* =========================
@@ -216,11 +216,20 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: "1h" }
     );
 
-    return res.json({ token });
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: false, // true en producción (https)
+  sameSite: "lax",
+  maxAge: 1000 * 60 * 60 * 24, // 1 día
+});
+return res.json({ message: "Logged in" });
 
+};
+
+export const logout = async (req: Request, res: Response) => {
   
-   
-  
+  res.clearCookie("token");
+  return res.json({ message: "Logged out" });
 };
 
 export const createUsers = async (req: Request, res: Response) => {
@@ -237,6 +246,7 @@ export const createUsers = async (req: Request, res: Response) => {
       data: {
         email,
         password: hashedPassword,
+        role:"USER"
       },
     });
 
