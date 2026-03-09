@@ -221,6 +221,7 @@ export const login = async (req: Request, res: Response) => {
   secure: false, // true en producción (https)
   sameSite: "lax",
   maxAge: 1000 * 60 * 60 * 24, // 1 día
+  path: "/"
 });
 return res.json({ message: "Logged in" });
 

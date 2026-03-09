@@ -7,6 +7,7 @@ export const authService = {
     const res = await apiFetch("/auth/login", {
       method: "POST",
       body: JSON.stringify(credentials),
+      credentials:"include"
     });
     return res;
   },
@@ -14,7 +15,7 @@ export const authService = {
   // 2. Obtener usuario actual (Persistencia de sesión)
   getMe: async (): Promise<User | null> => {
     try {
-      const res = await apiFetch("/auth/me");
+      const res = await apiFetch("/auth/me", { cache: 'no-store'});
       if (!res.ok) return null;
       return await res.json();
     } catch (error) {
