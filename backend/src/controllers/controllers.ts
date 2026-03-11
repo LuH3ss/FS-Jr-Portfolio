@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { error } from "node:console";
 import { AppError } from "../utils/AppError.js";
+import { postSchema } from "../utils/validations/post.shema.js";
+import OpenAI from "openai";
 
 /* =========================
    POSTS
@@ -87,11 +89,15 @@ export const postPost = async (req: Request, res: Response) => {
     }
 
     const userId = req.userId;
-    const { title, content } = req.body;
+    const result = postSchema.safeParse(req.body);
 
-    if (!title || !content) {
+    
+    
+    if (!result.success) {
       throw new AppError("Title and content are required", 400)
     }
+    
+    const { title, content } = result.data;
 
     const post = await prisma.post.create({
       data: {
@@ -256,4 +262,49 @@ export const createUsers = async (req: Request, res: Response) => {
     
     
   
+};
+
+/* =========================
+   AI
+========================= */
+
+// Configuración para usar Groq como si fuera OpenAI
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY, 
+  baseURL: "https://api.groq.com/openai/v1",
+});
+
+export const improvePost = async (req: any, res: any) => {
+  const { prompt } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ error: "Falta el texto a mejorar" });
+  }
+
+  try {
+    const response = await groq.chat.completions.create({
+      model: "openai/gpt-oss-120b", // Modelo rápido y eficiente de Groq
+      messages: [
+        {
+          role: "system",
+          content: "Sos un editor de tecnología experto. Reescribí el texto del usuario para que sea claro, simple, amistoso y atractivo para un portfolio profesional."
+        },
+        { role: "user", content: prompt }
+      ],
+      stream: true, // Esto es lo que permite el streaming
+    });
+
+    // Preparamos al navegador para recibir datos poco a poco
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+
+    for await (const chunk of response) {
+      const content = chunk.choices[0]?.delta?.content || "";
+      res.write(content); // Enviamos cada pedacito al Frontend
+    }
+
+    res.end(); // Terminamos la conexión cuando termina la IA
+  } catch (error) {
+    console.error("Error en AI Controller:", error);
+    res.status(500).json({ error: "Error al mejorar el texto" });
+  }
 };

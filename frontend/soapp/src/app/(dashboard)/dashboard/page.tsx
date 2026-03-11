@@ -17,10 +17,10 @@ export default async function DashboardPage() {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-extrabold text-gray-950">
           Bienvenido, {user.email.split('@')[0]}
         </h1>
-        <p className="text-gray-500">Gestiona tus publicaciones desde aquí.</p>
+        <p className="text-black-500">Gestiona tus publicaciones desde aquí.</p>
       </header>
 
       <section className="mb-10">
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
         <div className="space-y-4">
           {posts.length === 0 ? (
             <div className="p-8 text-center border-2 border-dashed rounded-lg">
-              <p className="text-gray-400">Aún no has escrito nada.</p>
+              <p className="text-black-400">Aún no has escrito nada.</p>
             </div>
           ) : (
             posts.map((post) => (
