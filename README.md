@@ -1,15 +1,15 @@
-# 🚀 FS-Jr-Portfolio: AI-Enhanced Fullstack App
+# 🚀 AI-Enhanced Fullstack Portfolio
 
-Este proyecto es una plataforma de gestión de contenido (CRUD) profesional que integra capacidades de **Inteligencia Artificial Generativa** para optimizar la redacción técnica y potenciar el personal branding.
+Plataforma integral de gestión de contenidos que utiliza **Inteligencia Artificial Generativa** para transformar ideas técnicas en publicaciones profesionales y estructuradas.
 
 ## 🎯 Objetivo
-Demostrar una arquitectura fullstack sólida, manejando **streaming de datos**, validación estricta de esquemas y una experiencia de usuario fluida entre un frontend moderno y un backend robusto.
+Construir una arquitectura fullstack moderna que resuelva problemas reales de redacción técnica, aplicando validación estricta de datos y procesamiento de lenguaje natural en tiempo real.
 
 ## ✨ Características Destacadas
-* **AI Content Refiner:** Un asistente que utiliza LLMs para transformar ideas técnicas breves en posts profesionales.
-* **Streaming de Respuesta:** Implementación de `ReadableStream` y `TextDecoder` para que la IA "escriba" en tiempo real (UX mejorada).
-* **Seguridad y Validación:** Uso de **Zod** para validación de esquemas tanto en el servidor como en el cliente.
-* **Arquitectura Desacoplada:** Comunicación eficiente entre Next.js y Express mediante cookies seguras y manejo avanzado de CORS.
+* **AI Content Refiner:** Integración con LLMs para la mejora automática de contenido técnico.
+* **Streaming de Respuesta:** Uso de ReadableStream para visualizar la generación de texto de la IA en tiempo real (UX fluida).
+* **Validación con Zod:** Esquemas de seguridad en servidor y cliente para garantizar la integridad de cada post.
+* **Arquitectura Desacoplada:** Frontend en Next.js y Backend en Express con manejo seguro de sesiones mediante Cookies (SameSite: Lax).
 
 ## 🛠️ Stack Tecnológico
 
@@ -21,16 +21,46 @@ Demostrar una arquitectura fullstack sólida, manejando **streaming de datos**, 
 
 **Backend:**
 * Node.js & Express
-* Prisma ORM
+* Prisma ORM (Gestión de base de datos)
 * PostgreSQL
-* Zod
-* Groq SDK / OpenAI (Motor de IA)
+* Zod (Schema Validation)
+* IA: Groq / OpenAI SDK
 
 ---
 
 ## 🚀 Instalación y Uso
 
 ### 1. Clonar el repositorio
-```bash
-git clone [https://github.com/tu-usuario/fs-jr-portfolio.git](https://github.com/tu-usuario/fs-jr-portfolio.git)
-cd fs-jr-portfolio
+git clone https://github.com/usuario/repo.git
+cd repo
+
+### 2. Configuración del Backend
+cd backend
+npm install
+
+# Crear archivo .env en /backend con:
+DATABASE_URL="tu_url_postgresql"
+JWT_SECRET="tu_secreto_seguro"
+GROQ_API_KEY="tu_api_key"
+PORT=4000
+
+# Ejecutar migraciones e iniciar:
+npx prisma migrate dev
+npm run dev
+
+### 3. Configuración del Frontend
+cd ../frontend
+npm install
+npm run dev
+
+# Acceder a: http://localhost:3000
+
+---
+
+## 📝 Próximos Pasos
+* [ ] Implementación de almacenamiento de imágenes (Cloudinary/S3).
+* [ ] Sistema de etiquetas y categorías para los posts.
+* [ ] Despliegue en producción con CI/CD.
+
+---
+*Desarrollado como proyecto Fullstack de alto rendimiento.*
