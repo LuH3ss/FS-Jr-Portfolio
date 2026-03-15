@@ -1,5 +1,6 @@
 'use client';
 import { authService } from '@/services/auth.service';
+import { Button } from '../ui/button';
 
 export default function LogoutButton() {
   const handleLogout = async () => {
@@ -17,11 +18,11 @@ export default function LogoutButton() {
   };
 
   return (
-    <button 
+    <Button 
       onClick={handleLogout}
-      className="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-red-100 transition-colors"
-    >
+       variant="outline" size="sm" className="gap-2"
+     >
       Cerrar Sesión
-    </button>
+    </Button>
   );
 }
