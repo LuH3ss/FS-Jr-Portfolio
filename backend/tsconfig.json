@@ -7,10 +7,10 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
+    "module": "node16",
+    "target": "ES2022",
     "types": [],
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     // For nodejs:
     // "lib": ["esnext"],
@@ -33,7 +33,7 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
-
+"ignoreDeprecations": "5.0",
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
