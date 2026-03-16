@@ -221,16 +221,11 @@ export const login = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
-
+      const isProduction = process.env.NODE_ENV === 'production';
    res.cookie("token", token, {
   httpOnly: true,
-  // En producción (cuando la app esté online) debe ser true. 
-  // En local, si no usas https, puede ser false.
-  secure: process.env.NODE_ENV === 'production', 
-  
-  // Para que el navegador permita la cookie entre dominios distintos (Vercel -> Render)
-  sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-  
+  secure: true, // Siempre true porque Render y Vercel son HTTPS
+  sameSite: "none", // Obligatorio para cross-origin (Vercel <-> Render)
   maxAge: 1000 * 60 * 60 * 24, 
   path: "/"
 });

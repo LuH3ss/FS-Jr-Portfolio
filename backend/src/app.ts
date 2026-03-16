@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes.js";
     const app = express();
 
     app.use(express.json());
+    app.use(cookieParser());
 
     const allowedOrigins = [
   'http://localhost:3000',
@@ -22,7 +23,6 @@ app.use(
   })
 );
 
-app.use(cookieParser());
 
 
     
