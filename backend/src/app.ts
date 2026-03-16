@@ -8,10 +8,16 @@ import authRoutes from "./routes/authRoutes.js";
     const app = express();
 
     app.use(express.json());
+
+    const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.FRONTEND_URL ];
     
 app.use(
   cors({
-    origin: "http://localhost:3000",
+   origin: [
+    'http://localhost:3000', 
+    'https://fs-jr-portfolio.vercel.app'],
     credentials: true,
   })
 );
