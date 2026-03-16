@@ -222,11 +222,16 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: "1h" }
     );
 
-    res.cookie("token", token, {
+   res.cookie("token", token, {
   httpOnly: true,
-  secure: false, // true en producción (https)
-  sameSite: "lax",
-  maxAge: 1000 * 60 * 60 * 24, // 1 día
+  // En producción (cuando la app esté online) debe ser true. 
+  // En local, si no usas https, puede ser false.
+  secure: process.env.NODE_ENV === 'production', 
+  
+  // Para que el navegador permita la cookie entre dominios distintos (Vercel -> Render)
+  sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
+  
+  maxAge: 1000 * 60 * 60 * 24, 
   path: "/"
 });
 return res.json({ message: "Logged in" });
