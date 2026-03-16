@@ -224,10 +224,12 @@ export const login = async (req: Request, res: Response) => {
       const isProduction = process.env.NODE_ENV === 'production';
    res.cookie("token", token, {
   httpOnly: true,
-  secure: true, // Siempre true porque Render y Vercel son HTTPS
-  sameSite: "none", // Obligatorio para cross-origin (Vercel <-> Render)
-  maxAge: 1000 * 60 * 60 * 24, 
-  path: "/"
+  secure: true, // Obligatorio en producción
+  sameSite: "none", // Obligatorio en producción
+  path: "/",
+  // A veces es necesario especificar el dominio, pero probá primero SIN esto.
+  // Si no anda, agregá: domain: ".tu-dominio-en-render.com"
+  maxAge: 1000 * 60 * 60 * 24
 });
 return res.json({ message: "Logged in" });
 
