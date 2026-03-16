@@ -1,7 +1,7 @@
 // src/lib/api.ts
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const baseUrl = "http://localhost:4000";
+  const baseUrl =process.env.NEXT_PUBLIC_API_URL || 'https://tu-api-predeterminada.com';
   const dynamicHeaders: Record<string, string> = {};
 
   // Verificamos si estamos en el SERVIDOR
