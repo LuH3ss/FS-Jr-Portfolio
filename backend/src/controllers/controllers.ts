@@ -199,48 +199,36 @@ export const getMe = async (req: Request, res: Response) => {
 ========================= */
 
 export const login = async (req: Request, res: Response) => {
-  
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({
-      where: { email },
+        where: { email },
     });
 
     if (!user) {
-     throw new AppError("Invalida credentials", 401)
+        throw new AppError("Invalid credentials", 401);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-       throw new AppError("Invalida credentials", 401)
+        throw new AppError("Invalid credentials", 401);
     }
 
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
+        { userId: user.id, role: user.role },
+        process.env.JWT_SECRET as string,
+        { expiresIn: "1h" }
     );
-      const isProduction = process.env.NODE_ENV === 'production';
-   res.cookie("token", token, {
-  httpOnly: true,
-  secure: true, // Obligatorio en producción
-  sameSite: "none", // Obligatorio en producción
-  path: "/",
-  // A veces es necesario especificar el dominio, pero probá primero SIN esto.
-  // Si no anda, agregá: domain: ".tu-dominio-en-render.com"
-  maxAge: 1000 * 60 * 60 * 24
-});
-return res.json({ message: "Logged in" });
 
+    // DEVOLVEMOS EL TOKEN EN EL CUERPO DE LA RESPUESTA
+    return res.json({ message: "Logged in", token: token });
+};;
+
+export const logout = async (_req: Request, res: Response) => {
+    // Ya no es necesario res.clearCookie porque el token vive en el LocalStorage
+    return res.json({ message: "Logged out" });
 };
-
-export const logout = async (req: Request, res: Response) => {
-  
-  res.clearCookie("token");
-  return res.json({ message: "Logged out" });
-};
-
 export const createUsers = async (req: Request, res: Response) => {
   
     const { email, password } = req.body;
