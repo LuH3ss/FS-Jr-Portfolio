@@ -1,35 +1,22 @@
-    import express from "express";
-    import postRoutes from "./routes/routes.js";
-    import { errorMiddleware } from "./middlewares/errorMiddleware.js";
-    import cors from "cors"
-import cookieParser from "cookie-parser";
+import express from "express";
+import postRoutes from "./routes/routes.js";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
-    
-    const app = express();
 
-    app.use(express.json());
-    app.use(cookieParser());
+const app = express();
 
-    const allowedOrigins = [
-  'http://localhost:3000',
-  process.env.FRONTEND_URL ];
-    
+app.use(express.json());
+
+// Simplificado: Sin cookieParser y sin credentials: true
 app.use(
   cors({
-   origin: [
-    'http://localhost:3000', 
-    'https://fs-jr-portfolio.vercel.app'],
-    credentials: true,
+    origin: ['http://localhost:3000', 'https://fs-jr-portfolio.vercel.app'],
   })
 );
 
+app.use("/auth", authRoutes);
+app.use("/posts", postRoutes);
+app.use(errorMiddleware);
 
-
-    
-  app.use("/auth", authRoutes);
-
-    app.use("/posts", postRoutes);
-
-    app.use(errorMiddleware);
-
-    export default app;
+export default app;
