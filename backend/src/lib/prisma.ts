@@ -1,8 +1,6 @@
 import 'dotenv/config';
-  // import { PrismaClient, Prisma } from '@prisma/client';
-  import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const { PrismaClient, Prisma } = require('@prisma/client');
+  import { PrismaClient, Prisma } from '@prisma/client';
+
 import { PrismaPg } from '@prisma/adapter-pg';
 
 // Crear el adapter con tu DATABASE_URL
