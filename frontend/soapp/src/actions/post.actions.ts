@@ -12,7 +12,7 @@ export async function createPostAction(formData: FormData) {
   }
 
   try {
-    const res = await postService.create({ title, content });
+    const res = await postService.createPost({ title, content });
 
     if (!res.ok) {
       return { error: "No se pudo crear el post en el servidor" };
