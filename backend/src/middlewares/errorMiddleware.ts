@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/AppError.js";
-import { Prisma } from "../generated/prisma/client.js";
+// import { PrismaClient, Prisma } from '@prisma/client';
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { PrismaClient, Prisma } = require('@prisma/client');
 
 export const errorMiddleware = (
   err: Error,
@@ -16,7 +20,7 @@ export const errorMiddleware = (
 
   if (
   err instanceof Prisma.PrismaClientKnownRequestError &&
-  err.code === "P2002"
+  (err as any)?.code === "P2002"
 ) {
   return res.status(409).json({
     error: "Email already exists",
