@@ -10,22 +10,45 @@ import OpenAI from "openai";
     POSTS
 ========================= */
 
-export const deletePost = async (req: Request, res: Response) => {
-    const postId = req.params.id;
+export const getPosts = async (_req: Request, res: Response) => {
+    const posts = await prisma.post.findMany({
+        include: {
+            author: { select: { id: true, email: true } },
+        }
+    });
+    return res.json(posts);
+};
 
-    if (!req.userId) throw new AppError("Unauthorized", 401);
-
-    const post = await prisma.post.findUnique({ where: { id: postId } });
+export const getPostById = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const post = await prisma.post.findUnique({
+        where: { id },
+        include: {
+            author: { select: { id: true, email: true } },
+        },
+    });
 
     if (!post) throw new AppError("Post not found", 404);
+    return res.json(post);
+};
 
-    // Verificación de Dueño o Admin
-    if (req.userRole !== "ADMIN" && post.authorId !== req.userId) {
-        throw new AppError("Not authorized", 403);
-    }
+export const postPost = async (req: Request, res: Response) => {
+    if (!req.userId) throw new AppError("Unauthorized", 401);
 
-    await prisma.post.delete({ where: { id: postId } });
-    return res.status(204).send();
+    const result = postSchema.safeParse(req.body);
+    if (!result.success) throw new AppError("Title and content are required", 400);
+    
+    const { title, content } = result.data;
+
+    const post = await prisma.post.create({
+        data: {
+            title,
+            content,
+            authorId: req.userId,
+        },
+    });
+
+    return res.status(201).json(post);
 };
 
 export const updatePost = async (req: Request, res: Response) => {
@@ -49,37 +72,43 @@ export const updatePost = async (req: Request, res: Response) => {
     return res.json(updatedPost);
 };
 
-export const postPost = async (req: Request, res: Response) => {
+export const deletePost = async (req: Request, res: Response) => {
+    const postId = req.params.id;
     if (!req.userId) throw new AppError("Unauthorized", 401);
 
-    const result = postSchema.safeParse(req.body);
-    if (!result.success) throw new AppError("Title and content are required", 400);
-    
-    const { title, content } = result.data;
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) throw new AppError("Post not found", 404);
 
-    const post = await prisma.post.create({
-        data: {
-            title,
-            content,
-            authorId: req.userId,
-        },
-    });
+    if (req.userRole !== "ADMIN" && post.authorId !== req.userId) {
+        throw new AppError("Not authorized", 403);
+    }
 
-    return res.status(201).json(post);
-};
-
-export const getPosts = async (_req: Request, res: Response) => {
-    const posts = await prisma.post.findMany({
-        include: {
-            author: { select: { id: true, email: true } },
-        }
-    });
-    return res.json(posts);
+    await prisma.post.delete({ where: { id: postId } });
+    return res.status(204).send();
 };
 
 /* =========================
-    AUTH (Corregido para LocalStorage)
+    USERS & AUTH
 ========================= */
+
+export const getUsers = async (_req: Request, res: Response) => {
+    const users = await prisma.user.findMany({
+        select: { id: true, email: true, role: true, createdAt: true }
+    });
+    return res.json(users);
+};
+
+export const getMe = async (req: Request, res: Response) => {
+    if (!req.userId) throw new AppError("Anauthorized", 401);
+
+    const user = await prisma.user.findUnique({
+        where: { id: req.userId },
+        select: { id: true, email: true, role: true, createdAt: true },
+    });
+
+    if (!user) throw new AppError("User not found", 404);
+    return res.json(user);
+};
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -96,7 +125,6 @@ export const login = async (req: Request, res: Response) => {
         { expiresIn: "1h" }
     );
 
-    // IMPORTANTE: No usamos cookies, devolvemos el token en el JSON
     return res.json({ 
         message: "Logged in", 
         token, 
@@ -105,7 +133,6 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = async (_req: Request, res: Response) => {
-    // En LocalStorage el logout se hace en el Frontend borrando el token
     return res.json({ message: "Logged out" });
 };
 
