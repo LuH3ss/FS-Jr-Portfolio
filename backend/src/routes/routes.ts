@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { postPost, updatePost, deletePost, getPosts, getPostById, getUsers, improvePost } from "../controllers/controllers.js";
-import { authMiddleware} from "../middlewares/auth.middleware.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { authorize } from "../middlewares/authorize.js";
+import { postPost, updatePost, deletePost, getPosts, getPostById, getUsers, improvePost } from "../controllers/controllers";
+import { authMiddleware} from "../middlewares/auth.middleware";
+import { asyncHandler } from "../utils/asyncHandler";
+import { authorize } from "../middlewares/authorize";
 
 const router = Router();
 

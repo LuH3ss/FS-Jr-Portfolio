@@ -1,4 +1,4 @@
-import app from "./app.js";
+import app from "./app";
 
 // 1. Primero definís todas tus rutas
 app.get('/', (req, res) => {

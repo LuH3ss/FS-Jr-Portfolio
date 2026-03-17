@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { login, createUsers, logout, getMe } from "../controllers/controllers.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { login, createUsers, logout, getMe } from "../controllers/controllers";
+import { asyncHandler } from "../utils/asyncHandler";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 
 

@@ -1,9 +1,9 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../lib/prisma";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { AppError } from "../utils/AppError.js";
-import { postSchema } from "../utils/validations/post.shema.js";
+import { AppError } from "../utils/AppError";
+import { postSchema } from "../utils/validations/post.shema";
 import OpenAI from "openai";
 
 /* =========================

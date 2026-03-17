@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../utils/AppError.js";
+import { AppError } from "../utils/AppError";
 
 export const authorize = (...roles: ("USER" | "ADMIN")[]) => {
   return (req: Request, _res: Response, next: NextFunction) => {
