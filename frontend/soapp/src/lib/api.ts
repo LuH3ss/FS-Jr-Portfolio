@@ -1,34 +1,25 @@
 // src/lib/api.ts
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const baseUrl =process.env.NEXT_PUBLIC_API_URL || 'https://tu-api-predeterminada.com';
-  const dynamicHeaders: Record<string, string> = {};
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tu-api-predeterminada.com';
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...((options.headers as Record<string, string>) || {}),
+  };
 
-  // Verificamos si estamos en el SERVIDOR
-  if (typeof window === "undefined") {
-    try {
-      // Importación dinámica para evitar que el cliente intente cargar esto
-      const { cookies } = await import("next/headers");
-      const cookieStore = await cookies();
-      const token = cookieStore.get("token")?.value;
-
-      if (token) {
-        dynamicHeaders["Cookie"] = `token=${token}`;
-      }
-    } catch (error) {
-      console.error("Error accediendo a cookies en servidor:", error);
+  // 1. Obtenemos el token del localStorage (solo funciona en el cliente)
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // 2. Lo inyectamos como Header de Autorización
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
 
   const defaultOptions: RequestInit = {
     ...options,
-    // Importante para componentes de cliente:
-    credentials: "include", 
-    headers: {
-      "Content-Type": "application/json",
-      ...dynamicHeaders,
-      ...options.headers,
-    },
+    // Ya no necesitamos credentials: "include" porque no usamos cookies
+    headers,
   };
 
   return fetch(`${baseUrl}${endpoint}`, defaultOptions);
