@@ -1,26 +1,33 @@
-// src/lib/api.ts
-
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tu-api-predeterminada.com';
+  
+  // 1. Preparamos los headers base
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...((options.headers as Record<string, string>) || {}),
   };
 
-  // 1. Obtenemos el token del localStorage (solo funciona en el cliente)
+  // 2. Inyectamos el token si estamos en el cliente (Browser)
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
     if (token) {
-      // 2. Lo inyectamos como Header de Autorización
       headers["Authorization"] = `Bearer ${token}`;
     }
   }
 
-  const defaultOptions: RequestInit = {
-    ...options,
-    // Ya no necesitamos credentials: "include" porque no usamos cookies
-    headers,
+  // 3. Combinamos con headers que puedan venir en 'options'
+  // Usamos un objeto nuevo para no mutar el original
+  const finalHeaders = {
+    ...headers,
+    ...(options.headers as Record<string, string>),
   };
 
-  return fetch(`${baseUrl}${endpoint}`, defaultOptions);
+  const defaultOptions: RequestInit = {
+    ...options,
+    headers: finalHeaders,
+  };
+
+  // 4. Ejecutamos el fetch
+  const url = `${baseUrl}${endpoint}`;
+  
+  return fetch(url, defaultOptions);
 }
