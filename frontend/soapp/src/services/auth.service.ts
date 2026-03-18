@@ -21,13 +21,36 @@ export const authService = {
 
   getMe: async (): Promise<User | null> => {
     try {
-      const res = await apiFetch("/auth/me");
+      let token: string | undefined;
+
+      // 1. Detectamos si estamos en el Servidor o en el Cliente
+      if (typeof window === "undefined") {
+        // Estamos en el Servidor (Next.js Server Component)
+        const { cookies } = await import('next/headers');
+        const cookieStore = await cookies();
+        token = cookieStore.get('token')?.value;
+      } else {
+        // Estamos en el Cliente (Browser)
+        token = localStorage.getItem("token") || Cookies.get('token');
+      }
+
+      if (!token) return null;
+
+      // 2. Llamamos a la API. apiFetch ya debería estar configurado 
+      // para aceptar el token si se lo pasamos manualmente o por headers
+      const res = await apiFetch("/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (!res.ok) return null;
       return await res.json();
     } catch (error) {
       return null;
     }
   },
+
 
   logout: async () => {
    localStorage.removeItem("token");
