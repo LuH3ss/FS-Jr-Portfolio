@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,11 +21,9 @@ export default function LoginPage() {
       const res = await authService.login({ email, password });
       
       if (res.ok) {
-        // Importante: refresh limpia la caché de los Server Components
-        // para que detecten la nueva cookie de inmediato
-        // router.refresh(); 
-        // router.push('/dashboard');
-         window.location.href = '/dashboard';
+       // router.refresh() le avisa a Next que los datos de sesión cambiaron
+  router.refresh(); 
+  router.push('/dashboard');
         
       } else {
         const data = await res.json();

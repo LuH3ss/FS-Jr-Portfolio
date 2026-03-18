@@ -1,5 +1,5 @@
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tu-api-predeterminada.com';
+  const baseUrl = process.env.FRONTEND_URL || 'https://fs-jr-portfolio.vercel.app';
   
   // 1. Preparamos los headers base
   const headers: Record<string, string> = {

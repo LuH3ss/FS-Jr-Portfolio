@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import { User } from "@/lib/definitions";
+import Cookies from 'js-cookie';
 
 export const authService = {
   login: async (credentials: Record<string, string>) => {
@@ -9,9 +10,11 @@ export const authService = {
     });
 
     if (res.ok) {
-      const data = await res.json();
-      // Guardamos el token en localStorage
-      localStorage.setItem("token", data.token);
+  const data = await res.json();
+  localStorage.setItem("token", data.token);
+  
+  // Guardamos la cookie para que el Middleware la vea
+  Cookies.set('token', data.token, { expires: 1 }); // Expira en 1 día
     }
     return res;
   },
@@ -27,7 +30,8 @@ export const authService = {
   },
 
   logout: async () => {
-    localStorage.removeItem("token");
+   localStorage.removeItem("token");
+    Cookies.remove('token'); // <--- AGREGÁ ESTO
     return await apiFetch("/auth/logout", { method: "POST" });
   }
 };
