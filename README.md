@@ -1,66 +1,45 @@
-# 🚀 AI-Enhanced Fullstack Portfolio
+# 🚀 Portfolio-2026: Fullstack AI Writing Assistant
 
-Plataforma integral de gestión de contenidos que utiliza **Inteligencia Artificial Generativa** para transformar ideas técnicas en publicaciones profesionales y estructuradas.
+¡Bienvenido! Este proyecto es una aplicación **Fullstack** moderna diseñada para demostrar la integración de servicios de Inteligencia Artificial en un entorno web profesional. El objetivo principal es ofrecer un asistente de escritura dinámico y escalable.
 
-## 🎯 Objetivo
-Construir una arquitectura fullstack moderna que resuelva problemas reales de redacción técnica, aplicando validación estricta de datos y procesamiento de lenguaje natural en tiempo real.
+### 🔗 Enlaces Rápidos
+* **Live Demo:** https://fs-jr-portfolio.vercel.app
+* **Backend API:** https://fs-jr-portfolio.onrender.com
 
-## ✨ Características Destacadas
-* **AI Content Refiner:** Integración con LLMs para la mejora automática de contenido técnico.
-* **Streaming de Respuesta:** Uso de ReadableStream para visualizar la generación de texto de la IA en tiempo real (UX fluida).
-* **Validación con Zod:** Esquemas de seguridad en servidor y cliente para garantizar la integridad de cada post.
-* **Arquitectura Desacoplada:** Frontend en Next.js y Backend en Express con manejo seguro de sesiones mediante Cookies (SameSite: Lax).
+---
 
 ## 🛠️ Stack Tecnológico
+Para este proyecto elegí herramientas que priorizan el **Type-Safety** y el **Performance**:
 
-**Frontend:**
-* Next.js (App Router)
-* TypeScript
-* Tailwind CSS
-* Lucide React
-
-**Backend:**
-* Node.js & Express
-* Prisma ORM (Gestión de base de datos)
-* PostgreSQL
-* Zod (Schema Validation)
-* IA: Groq / OpenAI SDK
+* **Frontend:** Next.js 14 (App Router), TypeScript, Tailwind CSS.
+* **Backend:** Node.js con Express y TypeScript.
+* **Base de Datos:** PostgreSQL gestionado con Prisma ORM (alojado en Neon Tech).
+* **Auth:** JWT (JSON Web Tokens) con persistencia híbrida (LocalStorage + Cookies).
+* **IA:** Integración con Groq API para procesamiento de lenguaje natural de baja latencia.
 
 ---
 
-## 🚀 Instalación y Uso
+## 🔑 Guía para Recruiters & Testers
+Si querés probar las funcionalidades del Dashboard sin crear una cuenta nueva, podés usar las siguientes credenciales de prueba:
 
-### 1. Clonar el repositorio
-git clone https://github.com/usuario/repo.git
-cd repo
+> **Email:** juli@deleon.com
+> **Password:** 20202020
 
-### 2. Configuración del Backend
-cd backend
-npm install
-
-# Crear archivo .env en /backend con:
-DATABASE_URL="tu_url_postgresql"
-JWT_SECRET="tu_secreto_seguro"
-GROQ_API_KEY="tu_api_key"
-PORT=4000
-
-# Ejecutar migraciones e iniciar:
-npx prisma migrate dev
-npm run dev
-
-### 3. Configuración del Frontend
-cd ../frontend
-npm install
-npm run dev
-
-# Acceder a: http://localhost:3000
+### ¿Qué podés ver actualmente?
+1.  **Autenticación Robusta:** Flujo completo de Login/Logout con protección de rutas y manejo de sesiones.
+2.  **Dashboard Dinámico:** Interfaz de usuario que se adapta según el estado de la sesión y recupera datos del perfil.
+3.  **Gestión de Contenido:** Visualización de posts existentes y creación de nuevas entradas conectadas a la DB en tiempo real.
+4.  **Consumo de API:** Arquitectura de peticiones optimizada entre Vercel (Frontend) y Render (Backend) con manejo de CORS avanzado.
 
 ---
 
-## 📝 Próximos Pasos
-* [ ] Implementación de almacenamiento de imágenes (Cloudinary/S3).
-* [ ] Sistema de etiquetas y categorías para los posts.
-* [ ] Despliegue en producción con CI/CD.
+## 🚧 Roadmap: Próximos Pasos (Work in Progress)
+Este proyecto está en constante evolución. Los siguientes módulos están actualmente en desarrollo:
+
+* **Panel de Administración (Admin Section):** Implementación de roles de usuario (RBAC) para moderación de contenido y gestión de métricas de la plataforma.
+* **Integración Avanzada de IA:** Agentes autónomos para sugerencias de estilo, tono y corrección gramatical automática.
+* **Optimización de UI/UX:** Implementación de Skeleton Screens para mejorar la percepción de carga y Framer Motion para transiciones fluidas.
+* **Tests Automatizados:** Cobertura de tests unitarios y de integración con Jest y Cypress para asegurar la estabilidad del código.
 
 ---
-*Desarrollado como proyecto Fullstack de alto rendimiento.*
+*Desarrollado con ❤️ por Lucas Axel Hess — Junior Fullstack Developer.*
